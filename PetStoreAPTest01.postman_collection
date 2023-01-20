@@ -1,0 +1,193 @@
+{
+	"info": {
+		"_postman_id": "95f0d6b3-63d9-417a-8507-aa2ffbdb575b",
+		"name": "Test01",
+		"description": "This collection will:\n\n1)create an user into the database\n\n2) Get user by username and verify if it is in the database\n\n3) Find pet by status \"sold\",\n\n3.1 Return a list of all pet's id and names\n\n3.2) Return a list of all pet's name followed by duplicates quantity found in database",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24445921"
+	},
+	"item": [
+		{
+			"name": "Create User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"const num = pm.variables.replaceIn('{{$randomInt}}');\r",
+							"const username = pm.variables.replaceIn('{{$randomUserName}}');\r",
+							"const firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+							"const lastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+							"const email = pm.variables.replaceIn(firstName+lastName+'@gmail.com');\r",
+							"const password = pm.variables.replaceIn('{{$randomPassword}}');\r",
+							"const phoneNumber = pm.variables.replaceIn('{{$randomPhoneNumber}}');\r",
+							"pm.globals.set(\"idNumber\",num);\r",
+							"pm.globals.set(\"username\",username);\r",
+							"pm.globals.set(\"firstName\",firstName);\r",
+							"pm.globals.set(\"lastName\",lastName);\r",
+							"pm.globals.set(\"email\",email);\r",
+							"pm.globals.set(\"password\",password);\r",
+							"pm.globals.set(\"phoneNumber\",phoneNumber);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"id\": {{idNumber}},\r\n  \"username\": \"{{username}}\",\r\n  \"firstName\": \"{{firstName}}\",\r\n  \"lastName\": \"{{lastName}}\",\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{password}}\",\r\n  \"phone\": \"{{phoneNumber}}\",\r\n  \"userStatus\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseurl}}/user",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"user"
+					]
+				},
+				"description": "Uses the pre-request script to generate random data which gets stored in Global Variables to be reused on request body"
+			},
+			"response": []
+		},
+		{
+			"name": "Get user by username",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}/user/{{username}}",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"user",
+						"{{username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Find Pet by Status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function(){\r",
+							"    pm.response.to.have.status(200);\r",
+							"})\r",
+							"\r",
+							"//Return all pets Id & Name\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"var array=[];\r",
+							"console.log(\"Pet ID + Pet Name\");\r",
+							"for(var i=0;i<jsonData.length;i++){\r",
+							"array.push([jsonData[i].id,jsonData[i].name])\r",
+							"console.log(array[i]);\r",
+							"}   \r",
+							"\r",
+							"//Return pet name and quantity by name\r",
+							"const teste= new Map();\r",
+							"array.forEach(function(x){\r",
+							"    if(!teste.has(x[1])){\r",
+							"        teste.set(x[1],1);\r",
+							"    }else{\r",
+							"        teste.set(x[1],teste.get(x[1])+1);\r",
+							"    }\r",
+							"});\r",
+							"console.log(\"Pet Name + Records found in database\");\r",
+							"console.log(teste);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{baseurl}}/pet/findByStatus?status=sold",
+					"host": [
+						"{{baseurl}}"
+					],
+					"path": [
+						"pet",
+						"findByStatus"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "sold"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
