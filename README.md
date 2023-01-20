@@ -2,7 +2,7 @@
 
 This collection will:
 
-1)create an user into the database
+1) Create an user into the database
 
 2) Get user by username and verify if it is in the database
 
